@@ -276,13 +276,24 @@ async function antilinkgc(client, m) {
     if (m.key.remoteJid.endsWith('@g.us') && (linkRegex.test(messageContent) || groupButtonRegex.test(messageContent) || readmoreRegex.test(messageContent))) {
       try {
         const senderId = m.key.participant || m.key.remoteJid;
-        await client.sendMessage(m.key.remoteJid, { 
-          text: `🚫 Maaf, terdeteksi Link Group yang tidak diperbolehkan di grup ini. @${senderId.split('@')[0]}`, 
-          mentions: [senderId], 
-          quoted: m 
-        });
-        await client.sendMessage(m.key.remoteJid, { delete: m.key });
-        console.log(`🗑️ Pesan yang mengandung Link Group telah dihapus di grup ${m.key.remoteJid}`);
+        const groupMetadata = await client.groupMetadata(m.key.remoteJid);
+        const isAdmin = groupMetadata.participants.some(p => p.id === senderId && (p.admin === 'admin' || p.admin === 'superadmin'));
+
+        if (isAdmin) {
+          await client.sendMessage(m.key.remoteJid, { 
+            text: `🚫 Kamu admin di grup ini, tenang saja @${senderId.split('@')[0]}. Link grup tidak akan dihapus oleh bot. 😎`, 
+            mentions: [senderId], 
+            quoted: m 
+          });
+        } else {
+          await client.sendMessage(m.key.remoteJid, { 
+            text: `🚫 Maaf, terdeteksi Link Group yang tidak diperbolehkan di grup ini. Pesan dari @${senderId.split('@')[0]} telah dihapus. Mohon untuk tidak mengirim link grup di sini. Terima kasih. 🙏`, 
+            mentions: [senderId], 
+            quoted: m 
+          });
+          await client.sendMessage(m.key.remoteJid, { delete: m.key });
+          console.log(`🗑️ Pesan yang mengandung Link Group dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}`);
+        }
       } catch (error) {
         console.error('⚠️ Terjadi kesalahan saat menghapus pesan yang mengandung Link Group:', error);
       }
@@ -299,13 +310,24 @@ async function antilinkchannel(client, m) {
     if (m.key.remoteJid.endsWith('@g.us') && linkRegex.test(messageContent)) {
       try {
         const senderId = m.key.participant || m.key.remoteJid;
-        await client.sendMessage(m.key.remoteJid, { 
-          text: `🚫 Maaf, terdeteksi Link Channel yang tidak diperbolehkan di grup ini. @${senderId.split('@')[0]}`, 
-          mentions: [senderId], 
-          quoted: m 
-        });
-        await client.sendMessage(m.key.remoteJid, { delete: m.key });
-        console.log(`🗑️ Pesan yang mengandung Link Channel telah dihapus di grup ${m.key.remoteJid}`);
+        const groupMetadata = await client.groupMetadata(m.key.remoteJid);
+        const isAdmin = groupMetadata.participants.some(p => p.id === senderId && (p.admin === 'admin' || p.admin === 'superadmin'));
+
+        if (isAdmin) {
+          await client.sendMessage(m.key.remoteJid, { 
+            text: `🚫 Kamu admin di grup ini, tenang saja @${senderId.split('@')[0]}. Link channel tidak akan dihapus oleh bot. 😎`, 
+            mentions: [senderId], 
+            quoted: m 
+          });
+        } else {
+          await client.sendMessage(m.key.remoteJid, { 
+            text: `🚫 Maaf, terdeteksi Link Channel yang tidak diperbolehkan di grup ini. Pesan dari @${senderId.split('@')[0]} telah dihapus. Mohon untuk tidak mengirim link channel di sini. Terima kasih. 🙏`, 
+            mentions: [senderId], 
+            quoted: m 
+          });
+          await client.sendMessage(m.key.remoteJid, { delete: m.key });
+          console.log(`🗑️ Pesan yang mengandung Link Channel dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}`);
+        }
       } catch (error) {
         console.error('⚠️ Terjadi kesalahan saat menghapus pesan yang mengandung Link Channel:', error);
       }
