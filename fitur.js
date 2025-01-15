@@ -89,9 +89,9 @@ const sendWelcomeGoodbyeMessage = async (client, groupId, participant, type) => 
     let messageText = '';
     let imageUrl = '';
 
-    if (type === 'add' && config.enableWelcome) {
+    if (type === 'add' && config.welcome) {
       messageText = `Selamat datang @${participantId} di grup kami! Semoga betah ya! 🎉`;
-    } else if (type === 'remove' && config.enableGoodbye) {
+    } else if (type === 'remove' && config.goodbye) {
       messageText = `Selamat tinggal @${participantId}, semoga sukses di tempat yang baru! 🌟`;
     } else {
       return; // Jika fitur dinonaktifkan, keluar dari fungsi
@@ -132,7 +132,7 @@ Deskripsi Grup: ${groupMetadata.desc} 📝
 
 // Fungsi untuk merespon perubahan info grup
 const handleGroupInfoChange = async (client, update) => {
-  if (config.enableGroupInfoChange) {
+  if (config.groupInfoChange) {
     const maxRetries = 3;
     let attempt = 0;
 
@@ -206,7 +206,7 @@ Grup Dibuat Pada: ${formattedCreationDate} 📅
 
 // Fungsi untuk merespon perubahan status admin
 const handleAdminStatusChange = async (client, update) => {
-  if (config.enableAdminStatusChangeNotification) {
+  if (config.adminStatusChangeNotification) {
     const { id, participants, action } = update;
 
     for (const participant of participants) {
@@ -293,7 +293,7 @@ function resetAllWarningCounts() {
   saveWarningCounts();
 }
 
-if (config.enableAutoResetWarnings) {
+if (config.autoResetWarnings) {
   setInterval(resetAllWarningCounts, config.resetWarningInterval);
 }
 
@@ -315,7 +315,7 @@ const warningMessagesChannel = [
 
 // Fungsi untuk menghapus pesan yang mengandung link grup di grup
 async function antilinkgc(client, m) {
-  if (config.enableAntilinkGC) {
+  if (config.antilinkGC) {
     const linkRegex = /chat\.whatsapp\.com\/[^\s]+/g;
     const groupButtonRegex = /(Lihat group|Bergabung ke group)/i;
     const readmoreRegex = /(readmore|Baca selengkapnya)/i;
@@ -341,7 +341,7 @@ async function antilinkgc(client, m) {
           saveWarningCounts();
 
           if (warningCounts[senderId] > 5) {
-            if (config.enableAutoKick) {
+            if (config.autoKick) {
               await client.sendMessage(m.key.remoteJid, { 
                 text: `🚫 @${senderId.split('@')[0]} telah dikeluarkan dari grup karena mengirim link grup lebih dari 5 kali. Mohon untuk tidak mengirim link grup di sini. Terima kasih. 🙏`, 
                 mentions: [senderId], 
@@ -381,7 +381,7 @@ async function antilinkgc(client, m) {
 
 // Fungsi untuk menghapus pesan yang mengandung link channel di grup
 async function antilinkchannel(client, m) {
-  if (config.enableAntilinkChannel) {
+  if (config.antilinkChannel) {
     const linkRegex = /whatsapp\.com\/channel\/[^\s]+/g;
     const messageContent = m.message?.conversation || m.message?.extendedTextMessage?.text || m.message?.buttonsResponseMessage?.selectedButtonId || m.message?.listResponseMessage?.singleSelectReply?.selectedRowId || m.message?.templateButtonReplyMessage?.selectedId || '';
 
@@ -405,7 +405,7 @@ async function antilinkchannel(client, m) {
           saveWarningCounts();
 
           if (warningCounts[senderId] > 5) {
-            if (config.enableAutoKick) {
+            if (config.autoKick) {
               await client.sendMessage(m.key.remoteJid, { 
                 text: `🚫 @${senderId.split('@')[0]} telah dikeluarkan dari grup karena mengirim link channel lebih dari 5 kali. Mohon untuk tidak mengirim link channel di sini. Terima kasih. 🙏`, 
                 mentions: [senderId], 

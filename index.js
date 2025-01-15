@@ -23,7 +23,7 @@ async function coloredLine(character, length) {
 
 // Fungsi untuk memeriksa dan memperbarui dependensi
 async function updateDependencies() {
-  if (config.enableDependencyUpdate) {
+  if (config.dependencyUpdate) {
     try {
       const line = await coloredLine('=', 50);
       console.log(line);
@@ -302,7 +302,7 @@ async function main() {
         saveCounts(viewCount, restartCount);
 
         // Uptime Bot
-        if (config.enableUptime) {
+        if (config.uptime) {
           const startTime = loadUptime();
           saveUptime(startTime); // Simpan waktu mulai bot
           setInterval(async () => {
@@ -336,7 +336,7 @@ main().catch(async (err) => {
 });
 
 // Tambahkan penanganan uncaughtException berdasarkan konfigurasi
-if (config.enableUncaughtExceptionHandling) {
+if (config.uncaughtExceptionHandling) {
   const { default: WAConnect, Browsers, useMultiFileAuthState } = require("@whiskeysockets/baileys");
   const pino = require("pino");
 
@@ -344,6 +344,20 @@ if (config.enableUncaughtExceptionHandling) {
     console.error('Uncaught Exception:', err);
     const line = await coloredLine('=', 50);
     console.log(line); // Tambahkan garis pemisah
+
+    if (config.autoInstallMissingModules && err.code === 'MODULE_NOT_FOUND') {
+      const moduleName = err.message.split("'")[1];
+      console.log(`Module ${moduleName} tidak ditemukan. Menginstall module...`);
+      try {
+        execSync(`npm install ${moduleName}`, { stdio: 'inherit' });
+        console.log(`Module ${moduleName} berhasil diinstall.`);
+        console.log(line); // Tambahkan garis pemisah
+        process.exit(1); // Restart bot setelah menginstall module
+      } catch (installError) {
+        console.error(`Gagal menginstall module ${moduleName}:`, installError);
+        console.log(line); // Tambahkan garis pemisah
+      }
+    }
 
     try {
       const { state } = await useMultiFileAuthState("./sesi");

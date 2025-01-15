@@ -46,55 +46,59 @@ const config = {
   // Fitur uptimeBot dihidupkan
   // Mengaktifkan atau menonaktifkan fitur uptime bot.
   // Jika diatur ke true, bot akan mencatat dan menampilkan waktu berjalan.
-  enableUptime: true,
+  uptime: true,
   // ---------------------------------------------------------------------
   // Fitur selamat datang dihidupkan
   // Mengaktifkan atau menonaktifkan fitur selamat datang.
-  enableWelcome: true,
+  welcome: true,
   // ---------------------------------------------------------------------
   // Fitur selamat tinggal dihidupkan
   // Mengaktifkan atau menonaktifkan fitur selamat tinggal.
-  enableGoodbye: true,
+  goodbye: true,
   // ---------------------------------------------------------------------
   // Fitur perubahan info grup dihidupkan
   // Mengaktifkan atau menonaktifkan fitur perubahan info grup.
-  enableGroupInfoChange: true,
+  groupInfoChange: true,
   // ---------------------------------------------------------------------
   // Fitur perubahan nama grup dihidupkan
   // Mengaktifkan atau menonaktifkan fitur perubahan nama grup.
-  enableGroupNameChange: true,
+  groupNameChange: true,
   // ---------------------------------------------------------------------
   // Fitur pembaruan dependensi dihidupkan
   // Mengaktifkan atau menonaktifkan fitur pembaruan dependensi.
-  enableDependencyUpdate: true,
+  dependencyUpdate: true,
   // ---------------------------------------------------------------------
   // Fitur penanganan uncaughtException dihidupkan
   // Mengaktifkan atau menonaktifkan penanganan uncaughtException.
   // Jika diatur ke true, bot akan menangani uncaughtException dan terus berjalan.
-  enableUncaughtExceptionHandling: true,
+  uncaughtExceptionHandling: true,
   // ---------------------------------------------------------------------
   // Fitur pemberitahuan perubahan status admin dihidupkan
   // Mengaktifkan atau menonaktifkan fitur pemberitahuan perubahan status admin.
-  enableAdminStatusChangeNotification: true,
+  adminStatusChangeNotification: true,
   // ---------------------------------------------------------------------
   // Fitur antilinkGC dihidupkan
   // Mengaktifkan atau menonaktifkan fitur antilink di grup.
-  enableAntilinkGC: true,
+  antilinkGC: true,
   // ---------------------------------------------------------------------
   // Fitur antilinkChannel dihidupkan
   // Mengaktifkan atau menonaktifkan fitur antilink di channel.
-  enableAntilinkChannel: true,
+  antilinkChannel: true,
   // ---------------------------------------------------------------------
   // Fitur auto kick dihidupkan
   // Mengaktifkan atau menonaktifkan fitur auto kick.
-  enableAutoKick: true,
+  autoKick: true,
   // ---------------------------------------------------------------------
   // Fitur reset otomatis peringatan dihidupkan
   // Mengaktifkan atau menonaktifkan fitur reset otomatis peringatan.
-  enableAutoResetWarnings: true,
+  autoResetWarnings: true,
   // ---------------------------------------------------------------------
   // Interval waktu reset peringatan dalam milidetik (default: 1 menit)
   resetWarningInterval: 60000,
+  // ---------------------------------------------------------------------
+  // Fitur auto install module yang hilang dihidupkan
+  // Mengaktifkan atau menonaktifkan fitur auto install module yang hilang.
+  autoInstallMissingModules: true,
   // ---------------------------------------------------------------------
 };
 
