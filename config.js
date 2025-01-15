@@ -85,6 +85,17 @@ const config = {
   // Mengaktifkan atau menonaktifkan fitur antilink di channel.
   enableAntilinkChannel: true,
   // ---------------------------------------------------------------------
+  // Fitur auto kick dihidupkan
+  // Mengaktifkan atau menonaktifkan fitur auto kick.
+  enableAutoKick: true,
+  // ---------------------------------------------------------------------
+  // Fitur reset otomatis peringatan dihidupkan
+  // Mengaktifkan atau menonaktifkan fitur reset otomatis peringatan.
+  enableAutoResetWarnings: true,
+  // ---------------------------------------------------------------------
+  // Interval waktu reset peringatan dalam milidetik (default: 1 menit)
+  resetWarningInterval: 60000,
+  // ---------------------------------------------------------------------
 };
 
 module.exports = config;

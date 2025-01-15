@@ -9,6 +9,7 @@ const { autoTyping, autoRecord, sendReadReceipt, sendWelcomeGoodbyeMessage, hand
 const { execSync } = require('child_process'); // Impor child_process untuk menjalankan perintah npm
 const { saveCounts, loadCounts, sendNotification } = require('./notifpesantersambung'); // Impor fungsi dari notifpesantersambung.js
 const axios = require('axios'); // Impor axios untuk mengirim pesan kesalahan
+const { resetAllWarningCounts } = require('./fitur'); // Impor fungsi resetAllWarningCounts dari fitur.js
 
 let { viewCount, restartCount } = loadCounts();
 
@@ -150,13 +151,13 @@ async function main() {
     const { username, password } = promptCredentials();
 
     if (checkCredentials(username, password)) {
-      const chalk = (await import('chalk')).default;
+      const { default: chalk } = await import('chalk'); // Impor chalk secara dinamis
       console.log(chalk.green('Login berhasil!'));
       console.log(line); // Tambahkan garis pemisah
       isLoggedIn = true;  // Menyimpan status login
       saveLoginStatus(isLoggedIn); // Simpan status login ke file
     } else {
-      const chalk = (await import('chalk')).default;
+      const { default: chalk } = await import('chalk'); // Impor chalk secara dinamis
       console.log(chalk.red('Username atau password salah!'));
       console.log(line); // Tambahkan garis pemisah
       process.exit(1); // Keluar dari proses jika login gagal

@@ -265,22 +265,52 @@ Pembuat Grup: @${groupOwner.split('@')[0]} 👑
   }
 }
 
-const warningCounts = {}; // Menyimpan jumlah peringatan untuk setiap pengguna
+const warningCounts = loadWarningCounts(); // Menyimpan jumlah peringatan untuk setiap pengguna
+
+function saveWarningCounts() {
+  fs.writeFileSync('peringatan.json', JSON.stringify(warningCounts, null, 2));
+}
+
+function loadWarningCounts() {
+  if (fs.existsSync('peringatan.json')) {
+    const data = fs.readFileSync('peringatan.json');
+    return JSON.parse(data);
+  }
+  return {};
+}
+
+function resetWarningCount(senderId) {
+  if (warningCounts[senderId]) {
+    delete warningCounts[senderId];
+    saveWarningCounts();
+  }
+}
+
+function resetAllWarningCounts() {
+  for (const senderId in warningCounts) {
+    delete warningCounts[senderId];
+  }
+  saveWarningCounts();
+}
+
+if (config.enableAutoResetWarnings) {
+  setInterval(resetAllWarningCounts, config.resetWarningInterval);
+}
 
 const warningMessagesGC = [
-  (senderId) => `🚫 Peringatan pertama @${senderId.split('@')[0]}! Jangan kirim link grup di sini. 😎`,
-  (senderId) => `🚫 Peringatan kedua @${senderId.split('@')[0]}! Link grup tidak diperbolehkan. 🚀`,
-  (senderId) => `🚫 Peringatan ketiga @${senderId.split('@')[0]}! Hentikan mengirim link grup. 🔥`,
-  (senderId) => `🚫 Peringatan keempat @${senderId.split('@')[0]}! Link grup dilarang di sini. 🌟`,
-  (senderId) => `🚫 Peringatan terakhir @${senderId.split('@')[0]}! Kamu akan dikeluarkan jika mengirim link lagi. 💥`
+  (senderId) => `🚫 Peringatan pertama (1/5) @${senderId.split('@')[0]}! Mohon tidak mengirim link grup di sini. Terima kasih. 🙏`,
+  (senderId) => `🚫 Peringatan kedua (2/5) @${senderId.split('@')[0]}! Link grup tidak diperbolehkan. Mohon kerjasamanya. 🙏`,
+  (senderId) => `🚫 Peringatan ketiga (3/5) @${senderId.split('@')[0]}! Tolong hentikan mengirim link grup. Terima kasih atas pengertiannya. 🙏`,
+  (senderId) => `🚫 Peringatan keempat (4/5) @${senderId.split('@')[0]}! Link grup dilarang di sini. Mohon dipatuhi. 🙏`,
+  (senderId) => `🚫 Peringatan terakhir (5/5) @${senderId.split('@')[0]}! Anda akan dikeluarkan jika mengirim link lagi. Mohon pengertiannya. 🙏`
 ];
 
 const warningMessagesChannel = [
-  (senderId) => `🚫 Peringatan pertama @${senderId.split('@')[0]}! Jangan kirim link channel di sini. 😎`,
-  (senderId) => `🚫 Peringatan kedua @${senderId.split('@')[0]}! Link channel tidak diperbolehkan. 🚀`,
-  (senderId) => `🚫 Peringatan ketiga @${senderId.split('@')[0]}! Hentikan mengirim link channel. 🔥`,
-  (senderId) => `🚫 Peringatan keempat @${senderId.split('@')[0]}! Link channel dilarang di sini. 🌟`,
-  (senderId) => `🚫 Peringatan terakhir @${senderId.split('@')[0]}! Kamu akan dikeluarkan jika mengirim link lagi. 💥`
+  (senderId) => `🚫 Peringatan pertama (1/5) @${senderId.split('@')[0]}! Mohon tidak mengirim link channel di sini. Terima kasih. 🙏`,
+  (senderId) => `🚫 Peringatan kedua (2/5) @${senderId.split('@')[0]}! Link channel tidak diperbolehkan. Mohon kerjasamanya. 🙏`,
+  (senderId) => `🚫 Peringatan ketiga (3/5) @${senderId.split('@')[0]}! Tolong hentikan mengirim link channel. Terima kasih atas pengertiannya. 🙏`,
+  (senderId) => `🚫 Peringatan keempat (4/5) @${senderId.split('@')[0]}! Link channel dilarang di sini. Mohon dipatuhi. 🙏`,
+  (senderId) => `🚫 Peringatan terakhir (5/5) @${senderId.split('@')[0]}! Anda akan dikeluarkan jika mengirim link lagi. Mohon pengertiannya. 🙏`
 ];
 
 // Fungsi untuk menghapus pesan yang mengandung link grup di grup
@@ -308,17 +338,29 @@ async function antilinkgc(client, m) {
             warningCounts[senderId] = 0;
           }
           warningCounts[senderId]++;
+          saveWarningCounts();
 
           if (warningCounts[senderId] > 5) {
-            await client.sendMessage(m.key.remoteJid, { 
-              text: `🚫 @${senderId.split('@')[0]} telah dikeluarkan dari grup karena mengirim link grup lebih dari 5 kali. Mohon untuk tidak mengirim link grup di sini. Terima kasih. 🙏`, 
-              mentions: [senderId], 
-              quoted: m 
-            });
-            console.log(`🗑️ @${senderId.split('@')[0]} telah dikeluarkan dari grup ${m.key.remoteJid} karena mengirim link grup lebih dari 5 kali.`);
-            await client.sendMessage(m.key.remoteJid, { delete: m.key });
-            console.log(`🗑️ Pesan yang mengandung Link Group dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}.`);
-            await client.groupParticipantsUpdate(m.key.remoteJid, [senderId], 'remove');
+            if (config.enableAutoKick) {
+              await client.sendMessage(m.key.remoteJid, { 
+                text: `🚫 @${senderId.split('@')[0]} telah dikeluarkan dari grup karena mengirim link grup lebih dari 5 kali. Mohon untuk tidak mengirim link grup di sini. Terima kasih. 🙏`, 
+                mentions: [senderId], 
+                quoted: m 
+              });
+              console.log(`🗑️ @${senderId.split('@')[0]} telah dikeluarkan dari grup ${m.key.remoteJid} karena mengirim link grup lebih dari 5 kali.`);
+              await client.sendMessage(m.key.remoteJid, { delete: m.key });
+              console.log(`🗑️ Pesan yang mengandung Link Group dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}.`);
+              await client.groupParticipantsUpdate(m.key.remoteJid, [senderId], 'remove');
+            } else {
+              await client.sendMessage(m.key.remoteJid, { 
+                text: `🚫 Waduh, fitur auto kick dimatikan oleh bot. @${senderId.split('@')[0]} tidak dikeluarkan dari grup meskipun mengirim link grup lebih dari 5 kali. Mohon untuk tidak mengirim link grup di sini. Terima kasih. 🙏`, 
+                mentions: [senderId], 
+                quoted: m 
+              });
+              console.log(`🗑️ Fitur auto kick dimatikan oleh bot. @${senderId.split('@')[0]} tidak dikeluarkan dari grup ${m.key.remoteJid} meskipun mengirim link grup lebih dari 5 kali.`);
+              await client.sendMessage(m.key.remoteJid, { delete: m.key });
+              console.log(`🗑️ Pesan yang mengandung Link Group dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}.`);
+            }
           } else {
             const warningMessage = warningMessagesGC[warningCounts[senderId] - 1](senderId);
             await client.sendMessage(m.key.remoteJid, { 
@@ -360,17 +402,29 @@ async function antilinkchannel(client, m) {
             warningCounts[senderId] = 0;
           }
           warningCounts[senderId]++;
+          saveWarningCounts();
 
           if (warningCounts[senderId] > 5) {
-            await client.sendMessage(m.key.remoteJid, { 
-              text: `🚫 @${senderId.split('@')[0]} telah dikeluarkan dari grup karena mengirim link channel lebih dari 5 kali. Mohon untuk tidak mengirim link channel di sini. Terima kasih. 🙏`, 
-              mentions: [senderId], 
-              quoted: m 
-            });
-            console.log(`🗑️ @${senderId.split('@')[0]} telah dikeluarkan dari grup ${m.key.remoteJid} karena mengirim link channel lebih dari 5 kali.`);
-            await client.sendMessage(m.key.remoteJid, { delete: m.key });
-            console.log(`🗑️ Pesan yang mengandung Link Channel dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}. Peringatan ${warningCounts[senderId]}/5.`);
-            await client.groupParticipantsUpdate(m.key.remoteJid, [senderId], 'remove');
+            if (config.enableAutoKick) {
+              await client.sendMessage(m.key.remoteJid, { 
+                text: `🚫 @${senderId.split('@')[0]} telah dikeluarkan dari grup karena mengirim link channel lebih dari 5 kali. Mohon untuk tidak mengirim link channel di sini. Terima kasih. 🙏`, 
+                mentions: [senderId], 
+                quoted: m 
+              });
+              console.log(`🗑️ @${senderId.split('@')[0]} telah dikeluarkan dari grup ${m.key.remoteJid} karena mengirim link channel lebih dari 5 kali.`);
+              await client.sendMessage(m.key.remoteJid, { delete: m.key });
+              console.log(`🗑️ Pesan yang mengandung Link Channel dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}.`);
+              await client.groupParticipantsUpdate(m.key.remoteJid, [senderId], 'remove');
+            } else {
+              await client.sendMessage(m.key.remoteJid, { 
+                text: `🚫 Waduh, fitur auto kick dimatikan oleh bot. @${senderId.split('@')[0]} tidak dikeluarkan dari grup meskipun mengirim link channel lebih dari 5 kali. Mohon untuk tidak mengirim link channel di sini. Terima kasih. 🙏`, 
+                mentions: [senderId], 
+                quoted: m 
+              });
+              console.log(`🗑️ Fitur auto kick dimatikan oleh bot. @${senderId.split('@')[0]} tidak dikeluarkan dari grup ${m.key.remoteJid} meskipun mengirim link channel lebih dari 5 kali.`);
+              await client.sendMessage(m.key.remoteJid, { delete: m.key });
+              console.log(`🗑️ Pesan yang mengandung Link Channel dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}.`);
+            }
           } else {
             const warningMessage = warningMessagesChannel[warningCounts[senderId] - 1](senderId);
             await client.sendMessage(m.key.remoteJid, { 
@@ -389,6 +443,16 @@ async function antilinkchannel(client, m) {
   }
 }
 
+// Fungsi untuk mereset peringatan ketika seseorang keluar dan masuk lagi ke grup
+async function handleParticipantUpdate(client, update) {
+  const { id, participants, action } = update;
+  if (action === 'remove' || action === 'add') {
+    for (const participant of participants) {
+      resetWarningCount(participant);
+    }
+  }
+}
+
 module.exports = { 
   autoTyping, 
   autoRecord, 
@@ -397,5 +461,7 @@ module.exports = {
   handleGroupInfoChange, 
   handleAdminStatusChange,
   antilinkgc, // Pisahkan antilinkgc
-  antilinkchannel // Pisahkan antilinkchannel
+  antilinkchannel, // Pisahkan antilinkchannel
+  handleParticipantUpdate, // Tambahkan handleParticipantUpdate
+  resetAllWarningCounts // Tambahkan ekspor fungsi resetAllWarningCounts
 };
