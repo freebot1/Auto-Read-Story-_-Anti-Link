@@ -2,19 +2,7 @@ const config = require('./config'); // Impor konfigurasi
 const axios = require('axios'); // Impor axios untuk mengambil gambar
 const fs = require('fs'); // Impor fs untuk menyimpan dan memuat data dari file
 const path = require('path'); // Impor path untuk mengelola path file
-
-const imageUrls = [
-  "https://files.catbox.moe/wdmwak.jpg",
-  "https://files.catbox.moe/1vvl3c.jpg",
-  "https://files.catbox.moe/azbrp4.jpg",
-  "https://files.catbox.moe/zrezka.jpg",
-  "https://files.catbox.moe/iemyvc.png"
-];
-
-function getRandomImageUrl() {
-  const randomIndex = Math.floor(Math.random() * imageUrls.length);
-  return imageUrls[randomIndex];
-}
+const { getRandomImageUrl } = require('./gambaranimegc'); // Impor getRandomImageUrl
 
 function saveGroupInfo(groupId, data) {
   const dirPath = path.join(__dirname, 'notifgc');
@@ -38,7 +26,7 @@ function loadGroupInfo(groupId) {
 async function autoTyping(client, m) {
   if (config.autoTyping) {
     // Tangani kondisi undefined tanpa menampilkan pesan di log console
-    if (m.key.id && m.key.remoteJid && m.key.remoteJid.endsWith('@g.us')) {
+    if (m.key.id && m.key.remoteJid) {
       await client.sendPresenceUpdate('composing', m.key.remoteJid); // Kirim status typing
       setTimeout(async () => {
         await client.sendPresenceUpdate('paused', m.key.remoteJid); // Hentikan status typing setelah durasi yang ditentukan
@@ -51,7 +39,7 @@ async function autoTyping(client, m) {
 async function autoRecord(client, m) {
   if (config.autoRecord) {
     // Tangani kondisi undefined tanpa menampilkan pesan di log console
-    if (m.key.id && m.key.remoteJid && m.key.remoteJid.endsWith('@g.us')) {
+    if (m.key.id && m.key.remoteJid) {
       await client.sendPresenceUpdate('recording', m.key.remoteJid); // Kirim status recording
       setTimeout(async () => {
         await client.sendPresenceUpdate('paused', m.key.remoteJid); // Hentikan status recording setelah durasi yang ditentukan
@@ -342,6 +330,7 @@ async function antilinkgc(client, m) {
 
           if (warningCounts[senderId] > 5) {
             if (config.autoKick) {
+              const imageUrl = getRandomImageUrl();
               await client.sendMessage(m.key.remoteJid, { 
                 text: `🚫 @${senderId.split('@')[0]} telah dikeluarkan dari grup karena mengirim link grup lebih dari 5 kali. Mohon untuk tidak mengirim link grup di sini. Terima kasih. 🙏`, 
                 mentions: [senderId], 
@@ -352,6 +341,7 @@ async function antilinkgc(client, m) {
               console.log(`🗑️ Pesan yang mengandung Link Group dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}.`);
               await client.groupParticipantsUpdate(m.key.remoteJid, [senderId], 'remove');
             } else {
+              const imageUrl = getRandomImageUrl();
               await client.sendMessage(m.key.remoteJid, { 
                 text: `🚫 Waduh, fitur auto kick dimatikan oleh bot. @${senderId.split('@')[0]} tidak dikeluarkan dari grup meskipun mengirim link grup lebih dari 5 kali. Mohon untuk tidak mengirim link grup di sini. Terima kasih. 🙏`, 
                 mentions: [senderId], 
@@ -406,6 +396,7 @@ async function antilinkchannel(client, m) {
 
           if (warningCounts[senderId] > 5) {
             if (config.autoKick) {
+              const imageUrl = getRandomImageUrl();
               await client.sendMessage(m.key.remoteJid, { 
                 text: `🚫 @${senderId.split('@')[0]} telah dikeluarkan dari grup karena mengirim link channel lebih dari 5 kali. Mohon untuk tidak mengirim link channel di sini. Terima kasih. 🙏`, 
                 mentions: [senderId], 
@@ -416,6 +407,7 @@ async function antilinkchannel(client, m) {
               console.log(`🗑️ Pesan yang mengandung Link Channel dari @${senderId.split('@')[0]} telah dihapus di grup ${m.key.remoteJid}.`);
               await client.groupParticipantsUpdate(m.key.remoteJid, [senderId], 'remove');
             } else {
+              const imageUrl = getRandomImageUrl();
               await client.sendMessage(m.key.remoteJid, { 
                 text: `🚫 Waduh, fitur auto kick dimatikan oleh bot. @${senderId.split('@')[0]} tidak dikeluarkan dari grup meskipun mengirim link channel lebih dari 5 kali. Mohon untuk tidak mengirim link channel di sini. Terima kasih. 🙏`, 
                 mentions: [senderId], 
