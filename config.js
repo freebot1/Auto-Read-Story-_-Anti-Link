@@ -112,6 +112,14 @@ const config = {
   // Mengaktifkan atau menonaktifkan fitur antisticker di grup.
   antisticker: true,
   // ---------------------------------------------------------------------
+  // Fitur reaksipesanrandom dihidupkan
+  // Mengaktifkan atau menonaktifkan fitur reaksipesanrandom.
+  reaksipesanrandom: true,
+  // ---------------------------------------------------------------------
+  // Fitur matikanrekasipesan dihidupkan
+  // Mengaktifkan atau menonaktifkan fitur reaksi pesan.
+  matikanrekasipesan: false,
+  // ---------------------------------------------------------------------
 };
 
 module.exports = config;

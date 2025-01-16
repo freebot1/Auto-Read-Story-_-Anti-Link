@@ -12,7 +12,8 @@ const { saveCounts, loadCounts, sendNotification } = require('./notifpesantersam
 const axios = require('axios'); // Impor axios untuk mengirim pesan kesalahan
 const { resetAllWarningCounts } = require('./fitur'); // Impor fungsi resetAllWarningCounts dari fitur.js
 const { antigambar } = require('./antigambar'); // Impor fungsi antigambar
-const { antisticker } = require('./antisticker'); // Impor fungsi antisticker
+const { antisticker } = require('./antisticker'); // Impor fungsi antisticker 
+const { reaksipesanrandom } = require('./reaksipesanrandom'); // Impor fungsi reaksipesanrandom
 
 let { viewCount, restartCount } = loadCounts();
 
@@ -210,12 +211,14 @@ async function main() {
 
     client.ev.on("messages.upsert", async (chatUpdate) => {
       try {
+        if (!chatUpdate.messages || !chatUpdate.messages[0]) return;
         const m = chatUpdate.messages[0];
         if (!m.message) return;
 
         const maxTime = config.maxTime;
 
         if (m.key && !m.key.fromMe && m.message.protocolMessage?.type !== 2) { // 2 is the protocol message type for status delete
+          await reaksipesanrandom(client, m); // Gunakan fungsi reaksipesanrandom
           await autoTyping(client, m);
           await autoRecord(client, m);
           await sendReadReceipt(client, m);
@@ -223,9 +226,25 @@ async function main() {
           await antilinkgc(client, m); // Gunakan fungsi antilinkgc
           await antilinkchannel(client, m); // Gunakan fungsi antilinkchannel
           await antigambar(client, m); // Gunakan fungsi antigambar
-          await antisticker(client, m); // Gunakan fungsi antisticker
+          await antisticker(client, m); // Gunakan fungsi antisticker  
           viewCount++;
           saveCounts(viewCount, restartCount);
+        }
+      } catch (err) {
+        console.error("Error terjadi:", err);
+        const line = await coloredLine('=', 50);
+        console.log(line); // Tambahkan garis pemisah
+      }
+    });
+
+    client.ev.on("messages.update", async (chatUpdate) => {
+      try {
+        if (!chatUpdate.messages || !chatUpdate.messages[0]) return;
+        const m = chatUpdate.messages[0];
+        if (!m.message) return;
+
+        if (m.key && !m.key.fromMe && m.message.protocolMessage?.type !== 2) {
+          await reaksipesanrandom(client, m); // Gunakan fungsi reaksipesanrandom
         }
       } catch (err) {
         console.error("Error terjadi:", err);
