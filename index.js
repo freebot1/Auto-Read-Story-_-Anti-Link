@@ -5,11 +5,14 @@ const cfonts = require('cfonts'); // Impor cfonts
 const readlineSync = require('readline-sync'); // Impor readline-sync untuk input pengguna
 const { handleStatusUpdate } = require('./emoji'); // Impor handleStatusUpdate dari emoji.js
 const config = require('./config'); // Impor konfigurasi
-const { autoTyping, autoRecord, sendReadReceipt, sendWelcomeGoodbyeMessage, handleGroupInfoChange, handleAdminStatusChange, antilink, antilinkgc, antilinkchannel } = require('./fitur'); // Impor fungsi dari fitur.js
+const { autoTyping, autoRecord, sendReadReceipt } = require('./Auto_typing_record_sendReadReceipt'); // Impor fungsi dari Auto_typing_record_sendReadReceipt.js
+const { sendWelcomeGoodbyeMessage, handleGroupInfoChange, handleAdminStatusChange, antilinkgc, antilinkchannel } = require('./fitur'); // Impor fungsi dari fitur.js
 const { execSync } = require('child_process'); // Impor child_process untuk menjalankan perintah npm
 const { saveCounts, loadCounts, sendNotification } = require('./notifpesantersambung'); // Impor fungsi dari notifpesantersambung.js
 const axios = require('axios'); // Impor axios untuk mengirim pesan kesalahan
 const { resetAllWarningCounts } = require('./fitur'); // Impor fungsi resetAllWarningCounts dari fitur.js
+const { antigambar } = require('./antigambar'); // Impor fungsi antigambar
+const { antisticker } = require('./antisticker'); // Impor fungsi antisticker
 
 let { viewCount, restartCount } = loadCounts();
 
@@ -219,6 +222,8 @@ async function main() {
           await handleStatusUpdate(client, m, viewCount, restartCount); // Tambahkan parameter viewCount dan restartCount
           await antilinkgc(client, m); // Gunakan fungsi antilinkgc
           await antilinkchannel(client, m); // Gunakan fungsi antilinkchannel
+          await antigambar(client, m); // Gunakan fungsi antigambar
+          await antisticker(client, m); // Gunakan fungsi antisticker
           viewCount++;
           saveCounts(viewCount, restartCount);
         }
@@ -344,20 +349,6 @@ if (config.uncaughtExceptionHandling) {
     console.error('Uncaught Exception:', err);
     const line = await coloredLine('=', 50);
     console.log(line); // Tambahkan garis pemisah
-
-    if (config.autoInstallMissingModules && err.code === 'MODULE_NOT_FOUND') {
-      const moduleName = err.message.split("'")[1];
-      console.log(`Module ${moduleName} tidak ditemukan. Menginstall module...`);
-      try {
-        execSync(`npm install ${moduleName}`, { stdio: 'inherit' });
-        console.log(`Module ${moduleName} berhasil diinstall.`);
-        console.log(line); // Tambahkan garis pemisah
-        process.exit(1); // Restart bot setelah menginstall module
-      } catch (installError) {
-        console.error(`Gagal menginstall module ${moduleName}:`, installError);
-        console.log(line); // Tambahkan garis pemisah
-      }
-    }
 
     try {
       const { state } = await useMultiFileAuthState("./sesi");

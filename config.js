@@ -100,6 +100,18 @@ const config = {
   // Mengaktifkan atau menonaktifkan fitur auto install module yang hilang.
   autoInstallMissingModules: true,
   // ---------------------------------------------------------------------
+  // Fitur notifikasi pesan tersambung dihidupkan
+  // Mengaktifkan atau menonaktifkan fitur notifikasi pesan tersambung.
+  notifPesanTersambung: true,
+  // ---------------------------------------------------------------------
+  // Fitur antigambar dihidupkan
+  // Mengaktifkan atau menonaktifkan fitur antigambar di grup.
+  antigambar: true,
+  // ---------------------------------------------------------------------
+  // Fitur antisticker dihidupkan
+  // Mengaktifkan atau menonaktifkan fitur antisticker di grup.
+  antisticker: true,
+  // ---------------------------------------------------------------------
 };
 
 module.exports = config;

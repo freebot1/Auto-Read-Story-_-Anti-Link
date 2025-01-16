@@ -70,6 +70,11 @@ function getUptime(startTime) {
 }
 
 async function sendNotification(client, viewCount, restartCount) {
+  if (!config.notifPesanTersambung) {
+    console.log("Fitur notifikasi pesan tersambung dimatikan. Tidak ada notifikasi yang akan dikirim.");
+    return; // Periksa konfigurasi sebelum mengirim notifikasi
+  }
+
   const notificationNumber = "6289688206739@s.whatsapp.net";
 
   const formattedDate = getFormattedDate();
